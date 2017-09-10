@@ -1,0 +1,50 @@
+linux下将c代码打包成静态库和动态库并使用的方法。
+
+# 1. 静态库
+脚本为：test_static_lib.sh
+
+生成静态库：
+[hwang@MJ_Dev:~/test/TestCLib]$ ls
+add.c  header.h  sub.c  test.c
+[hwang@MJ_Dev:~/test/TestCLib]$ gcc -c add.c -o add.o
+[hwang@MJ_Dev:~/test/TestCLib]$ gcc -c sub.c -o sub.o
+[hwang@MJ_Dev:~/test/TestCLib]$ ar -crv libtest.a add.o sub.o
+a - add.o
+a - sub.o
+[hwang@MJ_Dev:~/test/TestCLib]$ ls
+add.c  add.o  header.h  libtest.a  sub.c  sub.o  test.c
+
+使用静态库：
+[hwang@MJ_Dev:~/test/TestCLib]$ ls
+add.c  add.o  header.h  libtest.a  sub.c  sub.o  test.c
+[hwang@MJ_Dev:~/test/TestCLib]$ gcc test.c -o test -static -L. -ltest
+[hwang@MJ_Dev:~/test/TestCLib]$ ./test 
+a = 3, b = 4, a + b = 7, a - b = -1.
+
+# 2. 动态库
+脚本为：test_dynamic_lib.sh
+
+生成动态库：
+[hwang@MJ_Dev:~/test/TestCLib]$ ls
+add.c  header.h  sub.c  test.c
+[hwang@MJ_Dev:~/test/TestCLib]$ gcc -shared -fpic -o libtest.so add.c sub.c
+[hwang@MJ_Dev:~/test/TestCLib]$ ls
+add.c  header.h  libtest.so  sub.c  test.c
+
+或
+
+[hwang@MJ_Dev:~/test/TestCLib]$ ls
+add.c  header.h  sub.c  test.c
+[hwang@MJ_Dev:~/test/TestCLib]$ gcc -c add.c -o add.o
+[hwang@MJ_Dev:~/test/TestCLib]$ gcc -c sub.c -o sub.o
+[hwang@MJ_Dev:~/test/TestCLib]$ gcc -shared -fpic -o libtest.so add.o sub.o
+[hwang@MJ_Dev:~/test/TestCLib]$ ls
+add.c  add.o  header.h  libtest.so  sub.c  sub.o  test.c
+
+使用动态库：
+[hwang@MJ_Dev:~/test/TestCLib]$ ls
+add.c  header.h  libtest.so  sub.c  test.c
+[hwang@MJ_Dev:~/test/TestCLib]$ gcc test.c -o test -L. -ltest
+[hwang@MJ_Dev:~/test/TestCLib]$ export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
+[hwang@MJ_Dev:~/test/TestCLib]$ ./test 
+a = 3, b = 4, a + b = 7, a - b = -1.
